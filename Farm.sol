@@ -26,10 +26,14 @@ contract MyFarm is ERC20, Ownable {
     }
 
     function withdraw() external {
+        address _farm = address(this);
         uint _shares = balanceOf(msg.sender);
+        require(_farm.balance > _shares, "farm balance is insufficient");
         address _sender = msg.sender;
         require(_shares > 0, "your investment is zero");
         _burn(_sender, _shares);
+        address payable _receiver = payable (_sender);
+        require(_receiver.send(_shares), "failed to transfer");
         emit Withdraw(_sender, _shares);
     }
 
